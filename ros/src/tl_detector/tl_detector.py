@@ -26,8 +26,7 @@ class TLDetector(object):
         self.waypoints_tree = None
         self.has_image = False
         self.camera_image = None
-        self.light_state = TrafficLight.RED
-        #self.lights = None
+        self.lights = []
 
         sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
@@ -48,6 +47,8 @@ class TLDetector(object):
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
 
         self.bridge = CvBridge()
+        self.light_classifier = TLClassifier()
+        self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
@@ -90,7 +91,6 @@ class TLDetector(object):
     def publish_waypoints(self):
 
         light_wp, state = self.process_traffic_lights()
-        # rospy.logwarn("Closest light wp: {0} \n And light state: {1}".format(light_wp, state))
 
         '''
         Publish upcoming red lights at camera frequency.
@@ -133,13 +133,6 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        if self.has_image:
-            cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-            image = im.fromarray(cv_image)
-            self.light_state = TrafficLight.RED
-            self.has_image = False
-
         return light.state
 
     def process_traffic_lights(self):
@@ -151,7 +144,7 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        closet_light_i = None
+        closet_light = None
         line_wp_idx = None
 
         # List of positions that correspond to the line to stop in front of for a given intersection
@@ -161,26 +154,20 @@ class TLDetector(object):
 
             # TODO find the closest visible traffic light (if one exists)
             diff = len(self.waypoints.waypoints)
-            for i, line in enumerate(stop_line_positions):
+            for i, light in enumerate(self.lights):
                 # Get stop line waypoint index
-                # line = stop_line_positions[i]
+                line = stop_line_positions[i]
                 temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
                 # Find closest stop line waypoint index
                 d = temp_wp_idx - car_wp_idx
                 if d >= 0 and d < diff:
                     diff = d
-                    closet_light_i = i
+                    closet_light = light
                     line_wp_idx = temp_wp_idx
 
-        # rospy.logwarn("Closest light wp: {0} \n And light state: {1}".format(line_wp_idx, closet_light_i))
-        # if closet_light:
-#        if line_wp_idx:
-            # -------------------------------------------------------------
-            # this is the only place to use self.lights function
-#            light = self.lights[closet_light_i]
-#            state = self.get_light_state(light)
-            # -------------------------------------------------------------
-#            return line_wp_idx, state
+        if closet_light:
+            state = self.get_light_state(closet_light)
+            return line_wp_idx, state
 
         return -1, TrafficLight.UNKNOWN
 
