@@ -1,5 +1,8 @@
 # Udacity Self Driving Car ND Capstone Project
 
+## Objective:
+* Write ROS nodes to implement core functionality of the autonomous vehicle system which includes traffic light detection, control, and waypoint following.
+* Test code using a simulator.
 
 ### Team Members (Alphabetical order):
 * Ashwin Wadte (ashwinwadte@gmail.com)
@@ -12,11 +15,11 @@
 
 This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car.
 
-
 ### System / Code Structure
 
-![System Overview](imgs/final-project-ros-graph-v2.png "System Overview")
+The following is a system architecture diagram showing the ROS nodes and topics used in the project.
 
+![System Overview](imgs/final-project-ros-graph-v2.png "System Overview")
 
 Please use **one** of the two installation options, either native **or** docker installation.
 
@@ -106,6 +109,36 @@ Specific to these libraries, the simulator grader and Carla use the following:
 | OpenMP | N/A | N/A |
 
 We are working on a fix to line up the OpenCV versions between the two.
+
+## Code Implementation:
+
+Following files have been updated in Project repository to meet project objectives. These files are updated based on discussion in project walkthrough videos between Mr. Brown and Mr. Steven. Details of Traffic Light Classifier used in this project are given in the next section.
+
+* /src/waypoint_updater/waypoint_updater.py
+* /src/twist_controllerd/dbw_node.py
+* /src/twist_controller/twist_controller.py
+* /src/tl_detector/tl_detector.py
+* /src/tl_detector/light_classification/tl_classifier.py
+* /src/tl_detector/sim_traffic_light_config.yaml
+* /src/tl_detector/site_traffic_light_config.yaml
+
+Additionally, `light_classifier_model` folder is added to repository which contains two sub folders i.e. *carla* and *simulation*. This folder contains `frozen_inference_graph.pb` obtained from light classifier training model.
+
+## Traffic Light Detection Node
+
+This node has the fundamental task of detecting what type of traffic signal the camera is looking at. To achieve this, it is necessary to make use of a neural network to classify each traffic light image into one of 4 different categories, “RED”, “GREEN”, “YELLOW” or “UNKNOWN”.  
+
+In order to expedite the process and after doing some research, the selection of a pre-trained model was the best for the current scenario. A pre-trained model from “Tensor flow detection model zoo” library was selected. They are really useful but they still have to be adjusted in order to make it work with our current dataset of images. The selected model for our project is: ssd_mobilenet_v1_coco. The intention was to experiment with different pre-trained models, nonetheless it was found that the current model provided the performance expected for our project needs.  
+
+As a final result, two inference graph are utilized during the project and need to be place into a directory that will be referenced and used in the classifier.
+
+Reference: [Tensor flow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md)
+
+## Simulator Run Results:
+
+Car navigates on track without much oscillations and traffic lights are identified correctly. Car stops on red signal and starts back again on green signal just as the expected behavior. Car typically runs with 20 mph. A part of output is provided below as gif:
+
+￼![Capstone video output](imgs/capstone_output.gif "Capstone video output")
 
 ### Solution for unsolicited error while compiling on Udacity workspace
 
