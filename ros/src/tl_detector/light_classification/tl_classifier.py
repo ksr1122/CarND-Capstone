@@ -59,7 +59,7 @@ class TLClassifier(object):
 
         for element, box in enumerate(boxes):
             if scores[element] > 0.5:
-                traffic_light_class = self.classes[classes[int(element)]]
+                traffic_light_class = self.classes[classes[element]]
                 rospy.logdebug("Detected traffic light is: %d", traffic_light_class)
                 return traffic_light_class
             else:
