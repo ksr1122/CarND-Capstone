@@ -10,11 +10,8 @@ class TLClassifier(object):
     def __init__(self):
         self.session = None
         self.model_graph = None
-        self.classes = {1: TrafficLight.GREEN,
-                        2: TrafficLight.RED,
-                        3: TrafficLight.YELLOW,
-                        4: TrafficLight.UNKNOWN}
-
+        self.classes = {1: TrafficLight.GREEN, 2: TrafficLight.RED, 3: TrafficLight.YELLOW, 4: TrafficLight.UNKNOWN}
+        
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
         self.get_model(os.path.dirname(os.path.realpath(__file__)) + self.config['classifier_model'])
