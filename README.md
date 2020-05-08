@@ -5,11 +5,11 @@
 * Test code using a simulator.
 
 ### Team Members (Alphabetical order):
-* Ashwin Wadte (ashwinwadte@gmail.com)
-* Dattatray Parle (dattatray.parle@wipro.com) 
-* Jose Luis Leal  (jlleal.urquiza@gmail.com)
-* Ravi Kandasamy Sundaram (ksr1122@gmail.com)
-* Zijun Lin (linzijun789@163.com)
+* Ashwin Wadte
+* Dattatray Parle
+* Jose Luis Leal
+* Ravi Kandasamy Sundaram
+* Zijun Lin
 
 ### Introduction
 
